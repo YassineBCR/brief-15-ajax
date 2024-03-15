@@ -1,29 +1,34 @@
-document.getElementById('submit-btn').addEventListener('click', () => {
-    const selectedModel = document.getElementById('model-select').value;
-  
-    // Mettez à jour le chemin d'accès au fichier CSV ici
-    const csv_path = '../data/mall_customers.csv'; // Chemin d'accès relatif
-    // const csv_path = '/path/to/your/csv/file/mall_customers.csv'; // Chemin d'accès absolu
-  
-    const data = {
-      csv_path: csv_path,
-      feature_columns: ['Age', 'Annual Income (k$)', 'Spending Score (1-100)'],
-    };
-  
-    fetch(`http://localhost:8000/${selectedModel}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+async function sendClusteringRequest(modelName) {
+  const response = await fetch(`http://localhost:8000/${modelName}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      csvPath: '../data/mall_customers.csv',
+      featureColumns: ['Age', 'Annual Income (k$)', 'Spending Score (1-100)']
     })
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-      document.getElementById('result').innerText = `Silhouette Score: ${result.silhouette_score}`;
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
   });
-  
+
+  if (response.ok) {
+    const result = await response.json();
+    console.log(result);
+
+    // Sélectionnez l'élément HTML où vous souhaitez afficher les résultats
+    const resultElement = document.getElementById('result');
+
+    // Mettez à jour le contenu de l'élément HTML avec les résultats
+    resultElement.innerHTML = `
+      <h3>Silhouette Score: ${result.silhouette_score}</h3>
+      <h4>Cluster Centers:</h4>
+      <pre>${JSON.stringify(result.cluster_centers, null, 2)}</pre>
+      <h4>Labels:</h4>
+      <pre>${JSON.stringify(result.labels, null, 2)}</pre>
+    `;
+  } else {
+    console.error('Error:', response.status, response.statusText);
+  }
+}
+
+// Appeler la fonction avec le nom du modèle en paramètre
+sendClusteringRequest('kmeans');

@@ -1,3 +1,6 @@
 /data
 data/
 data
+/back/__pycache__/
+__pycache__/
+/back/__pycache__
