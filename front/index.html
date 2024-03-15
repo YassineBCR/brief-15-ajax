@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clustering Models</title>
+    <title>Clustering Silhouette Score</title>
 </head>
 <body>
-    <h1>Choose a clustering model:</h1>
-    <select id="model-select">
-        <option value="kmeans">KMeans</option>
-        <option value="dbscan">DBSCAN</option>
-        <option value="hierarchical">Hierarchical Clustering</option>
-    </select>
-    <button id="submit-btn">Submit</button>
+    <h1>Clustering Silhouette Score</h1>
+    <div>
+        <label for="model-select">Select a model:</label>
+        <select id="model-select">
+            <option value="kmeans">KMeans</option>
+            <option value="dbscan">DBSCAN</option>
+            <option value="hierarchical">Hierarchical</option>
+        </select>
+        <button id="run-button">Run</button>
+    </div>
     <div id="result"></div>
-
     <script src="app.js"></script>
 </body>
 </html>

@@ -25,8 +25,8 @@ app.add_middleware(
 csv_path = os.path.abspath("../data/mall_customers.csv")
 feature_columns = ["Age", "Annual Income (k$)", "Spending Score (1-100)"]
 
-@app.post("/{model_name}")
-async def clustering(model_name: str):
+@app.get("/kmeans")
+async def kmeans():
     if not os.path.exists(csv_path):
         raise HTTPException(status_code=400, detail="CSV file not found")
 
@@ -35,15 +35,37 @@ async def clustering(model_name: str):
     scaler = StandardScaler()
     features_scaled = scaler.fit_transform(features)
 
-    if model_name == "kmeans":
-        result = kmeans_clustering(features_scaled, k=5, n_init=10)
-    elif model_name == "dbscan":
-        result = dbscan_clustering(features_scaled, eps=0.5, min_samples=5)
-    elif model_name == "hierarchical":
-        result = hierarchical_clustering(features_scaled, n_clusters=5, linkage="ward")
-    else:
-        raise HTTPException(status_code=400, detail="Invalid model name")
+    result = kmeans_clustering(features_scaled, k=5, n_init=10)
 
-    return result
+    return {"silhouette_score": result}
+
+@app.get("/dbscan")
+async def dbscan():
+    if not os.path.exists(csv_path):
+        raise HTTPException(status_code=400, detail="CSV file not found")
+
+    data = pd.read_csv(csv_path)
+    features = data[feature_columns]
+    scaler = StandardScaler()
+    features_scaled = scaler.fit_transform(features)
+
+    result = dbscan_clustering(features_scaled, eps=0.5, min_samples=5)
+
+    return {"silhouette_score": result}
+
+@app.get("/hierarchical")
+async def hierarchical():
+    if not os.path.exists(csv_path):
+        raise HTTPException(status_code=400, detail="CSV file not found")
+
+    data = pd.read_csv(csv_path)
+    features = data[feature_columns]
+    scaler = StandardScaler()
+    features_scaled = scaler.fit_transform(features)
+
+    result = hierarchical_clustering(features_scaled, n_clusters=5, linkage="ward")
+
+    return {"silhouette_score": result}
+
 if __name__ == "__main__":
     uvicorn.run(app)
