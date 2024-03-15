@@ -1,29 +1,25 @@
-document.getElementById('submit-btn').addEventListener('click', () => {
-    const selectedModel = document.getElementById('model-select').value;
-  
-    // Mettez à jour le chemin d'accès au fichier CSV ici
-    const csv_path = '../data/mall_customers.csv'; // Chemin d'accès relatif
-    // const csv_path = '/path/to/your/csv/file/mall_customers.csv'; // Chemin d'accès absolu
-  
-    const data = {
-      csv_path: csv_path,
-      feature_columns: ['Age', 'Annual Income (k$)', 'Spending Score (1-100)'],
-    };
-  
-    fetch(`http://localhost:8000/${selectedModel}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-      document.getElementById('result').innerText = `Silhouette Score: ${result.silhouette_score}`;
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+document.getElementById("run-button").addEventListener("click", async () => {
+  const modelSelect = document.getElementById("model-select");
+  const modelName = modelSelect.value;
+  await sendClusteringRequest(modelName);
+});
+
+async function sendClusteringRequest(modelName) {
+  const response = await fetch(`http://127.0.0.1:8000/${modelName}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
-  
+
+  if (response.ok) {
+    const result = await response.json();
+    console.log(result);
+
+    const resultElement = document.getElementById("result");
+
+    resultElement.innerHTML = `Silhouette Score: ${result}`;
+  } else {
+    console.error("Error:", response.status, response.statusText);
+  }
+}
