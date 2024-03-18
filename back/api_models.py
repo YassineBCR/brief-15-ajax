@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from functions_models import kmeans_clustering, dbscan_clustering, hierarchical_clustering
 import uvicorn
+
+from functions_models import kmeans_clustering, dbscan_clustering, hierarchical_clustering
 
 app = FastAPI()
 
@@ -18,21 +19,28 @@ app.add_middleware(
 
 @app.get("/kmeans")
 async def perform_kmeans_clustering():
-    silhouette_score_kmeans = kmeans_clustering(5, 10)
-# return {"silhouette_score_kmeans": silhouette_score_kmeans}
-    return silhouette_score_kmeans
+    try:
+        silhouette_score_kmeans = kmeans_clustering(5, 10)
+        return silhouette_score_kmeans
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/dbscan")
 async def perform_dbscan_clustering():
-    dbscan_result = dbscan_clustering(0.5, 5)
-    return dbscan_result
+    try:
+        dbscan_result = dbscan_clustering(0.5, 5)
+        return dbscan_result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/hierarchical")
 async def perform_hierarchical_clustering():
-    hierarchical_result = hierarchical_clustering(5, 'ward')
-    return hierarchical_result
-
+    try:
+        hierarchical_result = hierarchical_clustering(5, 'ward')
+        return hierarchical_result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Run the API with uvicorn
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

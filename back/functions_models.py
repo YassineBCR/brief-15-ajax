@@ -9,7 +9,12 @@ from sklearn.preprocessing import StandardScaler
 # Load data and prepare features
 csv_path = '../data/Mall_Customers.csv'
 data = pd.read_csv(csv_path)
-feature_columns = ['Age', 'Annual Income (k$)', 'Spending Score (1-100)']
+# Rename columns
+data = data.rename(columns={'CustomerID': 'customer_ID', 'Gender': 'gender', 'Age': 'age','Annual Income (k$)': 'annual_income', 'Spending Score (1-100)': 'spending_score'})
+# Map gender to 0 and 1
+data['gender'] = data['gender'].map({'Male': 0, 'Female': 1})
+feature_columns = ['age', 'gender', 'annual_income', 'spending_score']
+# to standardize the numerical features in other columns
 scaler = StandardScaler()
 features_scaled = scaler.fit_transform(data[feature_columns])
 

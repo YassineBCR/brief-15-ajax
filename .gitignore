@@ -5,3 +5,7 @@ data
 __pycache__/
 *.py[cod]
 *$py.class
+*.ipynb
+/model
+model/
+model
